@@ -1,0 +1,39 @@
+import React, { useState } from 'react';
+import { createBrowserRouter, RouterProvider, Route, createRoutesFromElements } from 'react-router-dom';
+import WeatherComponent from './WeatherComponent';
+import ForecastComponent from './ForecastComponent';
+import LogoComponent from './LogoComponent';
+import SearchPage from './SearchPage';
+
+const App: React.FC = () => {
+  const [isCelsius, setIsCelsius] = useState(true);
+
+  const toggleTemperatureUnit = () => {
+    setIsCelsius(!isCelsius);
+  };
+
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <>
+        <Route path="/" element={<HomePage isCelsius={isCelsius} toggleTemperatureUnit={toggleTemperatureUnit} />} />
+        <Route path="/search" element={<SearchPage />} />
+      </>
+    )
+  );
+
+  return (
+    <RouterProvider router={router} />
+  );
+};
+
+const HomePage: React.FC<{ isCelsius: boolean; toggleTemperatureUnit: () => void }> = ({ isCelsius, toggleTemperatureUnit }) => (
+  <div>
+    <LogoComponent isCelsius={isCelsius} toggleTemperatureUnit={toggleTemperatureUnit} />
+    <h1>Current Weather</h1>
+    <WeatherComponent isCelsius={isCelsius} />
+    <h1>Forecast</h1>
+    <ForecastComponent isCelsius={isCelsius} />
+  </div>
+);
+
+export default App;

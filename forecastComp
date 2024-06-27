@@ -1,0 +1,68 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import useGeolocation from './useGeolocation';
+
+const ForecastComponent: React.FC = () => {
+  const { coordinates, error: geolocationError } = useGeolocation();
+  const [forecastData, setForecastData] = useState<Forecast | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchForecastData = async (latitude: number, longitude: number) => {
+      try {
+        const apiKey = 'YOUR_API_KEY';
+        const response = await axios.get(
+          `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${latitude},${longitude}&days=6`
+        );
+        setForecastData(response.data.forecast);
+      } catch (err) {
+        setError('Failed to fetch forecast data.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (coordinates) {
+      fetchForecastData(coordinates.latitude, coordinates.longitude);
+    } else if (geolocationError) {
+      setError(geolocationError);
+      setLoading(false);
+    }
+  }, [coordinates, geolocationError]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
+  if (!forecastData) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h3>Hourly Forecast</h3>
+      <div>
+        {forecastData.forecastday[0].hour.map((hour) => (
+          <div key={hour.time_epoch}>
+            <p>{hour.time}: {hour.temp_c}°C</p>
+          </div>
+        ))}
+      </div>
+      <h3>5-Day Forecast</h3>
+      <div>
+        {forecastData.forecastday.slice(1).map((day) => (
+          <div key={day.date}>
+            <p>{day.date}: Max {day.day.maxtemp_c}°C, Min {day.day.mintemp_c}°C</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default ForecastComponent;

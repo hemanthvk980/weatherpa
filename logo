@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const logos = [
   'https://via.placeholder.com/100x50?text=Logo1',
@@ -11,22 +11,44 @@ const getRandomLogo = () => {
   return logos[randomIndex];
 };
 
-const LogoComponent: React.FC = () => {
-  const [isCelsius, setIsCelsius] = useState(true);
+interface LogoComponentProps {
+  isCelsius: boolean;
+  toggleTemperatureUnit: () => void;
+}
+
+const LogoComponent: React.FC<LogoComponentProps> = ({ isCelsius, toggleTemperatureUnit }) => {
   const [logo] = useState(getRandomLogo());
 
-  const toggleTemperatureUnit = () => {
-    setIsCelsius(!isCelsius);
-  };
-
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <img src={logo} alt="Random Logo" style={{ height: '50px' }} />
-      <button onClick={toggleTemperatureUnit} style={{ padding: '10px 20px', fontSize: '16px' }}>
+    <div style={styles.container}>
+      <img src={logo} alt="Random Logo" style={styles.logo} />
+      <button onClick={toggleTemperatureUnit} style={styles.button}>
         {isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius'}
       </button>
     </div>
   );
+};
+
+const styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px',
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    backgroundColor: '#fff',
+    position: 'sticky' as 'sticky',
+    top: '0',
+    zIndex: 1000,
+  },
+  logo: {
+    height: '50px',
+  },
+  button: {
+    padding: '10px 20px',
+    fontSize: '16px',
+  },
 };
 
 export default LogoComponent;

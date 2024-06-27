@@ -1,0 +1,32 @@
+import React, { useState } from 'react';
+
+const logos = [
+  'https://via.placeholder.com/100x50?text=Logo1',
+  'https://via.placeholder.com/100x50?text=Logo2',
+  'https://via.placeholder.com/100x50?text=Logo3',
+];
+
+const getRandomLogo = () => {
+  const randomIndex = Math.floor(Math.random() * logos.length);
+  return logos[randomIndex];
+};
+
+const LogoComponent: React.FC = () => {
+  const [isCelsius, setIsCelsius] = useState(true);
+  const [logo] = useState(getRandomLogo());
+
+  const toggleTemperatureUnit = () => {
+    setIsCelsius(!isCelsius);
+  };
+
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', border: '1px solid #ccc', borderRadius: '8px' }}>
+      <img src={logo} alt="Random Logo" style={{ height: '50px' }} />
+      <button onClick={toggleTemperatureUnit} style={{ padding: '10px 20px', fontSize: '16px' }}>
+        {isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius'}
+      </button>
+    </div>
+  );
+};
+
+export default LogoComponent;

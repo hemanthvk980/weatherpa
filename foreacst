@@ -1,0 +1,28 @@
+interface Condition {
+  text: string;
+  icon: string;
+}
+
+interface Hour {
+  time_epoch: number;
+  time: string;
+  temp_c: number;
+  condition: Condition;
+}
+
+interface Day {
+  maxtemp_c: number;
+  mintemp_c: number;
+  avgtemp_c: number;
+  condition: Condition;
+}
+
+interface ForecastDay {
+  date: string;
+  day: Day;
+  hour: Hour[];
+}
+
+interface Forecast {
+  forecastday: ForecastDay[];
+}

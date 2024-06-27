@@ -1,0 +1,1 @@
+            <p>{getDayOfWeek(day.date)}, {day.date}: Max {isCelsius ? `${day.day.maxtemp_c}°C` : `${day.day.maxtemp_f}°F`}, Min {isCelsius ? `${day.day.mintemp_c}°C` : `${day.day.mintemp_f}°F`}</p>

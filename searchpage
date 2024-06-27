@@ -1,0 +1,112 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+interface WeatherData {
+  location: {
+    name: string;
+    region: string;
+    country: string;
+  };
+  current: {
+    temp_c: number;
+    temp_f: number;
+    condition: {
+      text: string;
+      icon: string;
+    };
+  };
+}
+
+const SearchPage: React.FC = () => {
+  const [query, setQuery] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [isCelsius, setIsCelsius] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setQuery(query);
+
+    if (query.length > 2) {
+      try {
+        const apiKey = 'YOUR_API_KEY';
+        const response = await axios.get(`https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${query}`);
+        setSuggestions(response.data.map((item: any) => item.name));
+        setError(null); // Reset error if suggestions are found
+      } catch (err) {
+        setSuggestions([]);
+        setError('Failed to fetch suggestions');
+      }
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    setQuery(city);
+    setSuggestions([]);
+    setError(null); // Reset error when a city is selected
+  };
+
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      if (selectedCity) {
+        try {
+          const apiKey = 'YOUR_API_KEY';
+          const response = await axios.get(
+            `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${selectedCity}`
+          );
+          setWeatherData(response.data);
+          setError(null); // Reset error if weather data is found
+        } catch (err) {
+          setWeatherData(null);
+          setError('City not found');
+        }
+      }
+    };
+
+    fetchWeatherData();
+  }, [selectedCity]);
+
+  const toggleTemperatureUnit = () => {
+    setIsCelsius(!isCelsius);
+  };
+
+  return (
+    <div>
+      <h2>Search Page</h2>
+      <input
+        type="text"
+        value={query}
+        onChange={handleSearchChange}
+        placeholder="Search for a city..."
+      />
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {suggestions.length > 0 && (
+        <ul>
+          {suggestions.map((suggestion, index) => (
+            <li key={index} onClick={() => handleCitySelect(suggestion)}>
+              {suggestion}
+            </li>
+          ))}
+        </ul>
+      )}
+      {weatherData && (
+        <div>
+          <h3>Weather in {weatherData.location.name}, {weatherData.location.country}</h3>
+          <p>Temperature: {isCelsius ? `${weatherData.current.temp_c}°C` : `${weatherData.current.temp_f}°F`}</p>
+          <p>Condition: {weatherData.current.condition.text}</p>
+          <img src={`https:${weatherData.current.condition.icon}`} alt={weatherData.current.condition.text} />
+          <button onClick={toggleTemperatureUnit}>
+            {isCelsius ? 'Switch to Fahrenheit' : 'Switch to Celsius'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchPage;

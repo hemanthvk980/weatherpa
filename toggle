@@ -1,0 +1,24 @@
+import React, { useState } from 'react';
+import WeatherComponent from './WeatherComponent';
+import ForecastComponent from './ForecastComponent';
+import LogoComponent from './LogoComponent';
+
+const App: React.FC = () => {
+  const [isCelsius, setIsCelsius] = useState(true);
+
+  const toggleTemperatureUnit = () => {
+    setIsCelsius(!isCelsius);
+  };
+
+  return (
+    <div>
+      <h1>Current Weather</h1>
+      <LogoComponent isCelsius={isCelsius} toggleTemperatureUnit={toggleTemperatureUnit} />
+      <WeatherComponent isCelsius={isCelsius} />
+      <h1>Forecast</h1>
+      <ForecastComponent isCelsius={isCelsius} />
+    </div>
+  );
+};
+
+export default App;
